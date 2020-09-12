@@ -40,7 +40,8 @@ function CLASS:OnSpawn(pl)
 	pl.ph_prop:SetAngles(pl:GetAngles())	
 	pl.ph_prop:Spawn()
 	
-	if PHX.CVAR.UseCustomMdlProp:GetBool() then
+	--if PHX.CVAR.UseCustomMdlProp:GetBool() then
+	if PHX.GetVarBool("phvar_UseCustomMdlProp") then
 		if table.HasValue(PHX.PROP_PLMODEL_BANS, string.lower(player_manager.TranslatePlayerModel(pl:GetInfo("cl_playermodel")))) then
 			pl.ph_prop:SetModel("models/player/kleiner.mdl")
 			pl:ChatPrint("Your custom playermodel was banned from Props.")
