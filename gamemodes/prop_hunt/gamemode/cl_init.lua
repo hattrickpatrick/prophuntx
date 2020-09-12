@@ -182,7 +182,7 @@ function HUDPaint()
 	-- Hunter Blindlock Time
 	if GetGlobalBool("InRound", false) then
 		--local blindlock_time_left = (PHX.CVAR.BlindTime:GetInt() - (CurTime() - GetGlobalFloat("RoundStartTime", 0))) + 1
-		local blindlock_time_left = (PHX.GetVarNum("phvar_BlindTime") - (CurTime() - GetGlobalFloat("phvar_RoundStartTime", 0))) + 1
+		local blindlock_time_left = (PHX.GetVarNum("phvar_BlindTime") - (CurTime() - GetGlobalFloat("RoundStartTime", 0))) + 1
 		
 		if blindlock_time_left < 1 && blindlock_time_left > -6 then
 			blindlock_time_left_msg = PHX:FTranslate("HUD_UNBLINDED")
