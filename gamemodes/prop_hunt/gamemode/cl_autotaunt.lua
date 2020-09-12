@@ -2,7 +2,8 @@
 -- Props will autotaunt at specified intervals
 local isEnabled = false
 local isProp = false
-local delay = PHX.CVAR.AutoTauntDelay:GetInt() or 6
+--local delay = PHX.CVAR.AutoTauntDelay:GetInt() or 6
+local delay = tonumber(GetGlobalString("AutoTauntDelay")) or 6
 local started = false
 local timerID = "ph_autotaunt_timer"
 local teamCheckTimer = "ph_autotaunt_teamchecktimer"
@@ -28,7 +29,8 @@ end
 local function TimeleftRTaunt()
 	local ply = LocalPlayer()
 	local lastTauntTime = ply:GetNWFloat("LastTauntTime")
-	local nextRandomTime = lastTauntTime + PHX.CVAR.NormalTauntDelay:GetInt()
+	--local nextRandomTime = lastTauntTime + PHX.CVAR.NormalTauntDelay:GetInt()
+	local nextRandomTime = lastTauntTime + PHX.GetVarNum("phvar_NormalTauntDelay")
 	local curTime = CurTime()
 	return nextRandomTime - curTime
 end
@@ -36,7 +38,8 @@ end
 local function TimeleftCTaunt()
 	local ply = LocalPlayer()
 	local lastTauntTime = ply:GetNWFloat("localLastTauntTime", 0)
-	local nextCustomTime = lastTauntTime + PHX.CVAR.CustomTauntDelay:GetInt()
+	--local nextCustomTime = lastTauntTime + PHX.CVAR.CustomTauntDelay:GetInt()
+	local nextCustomTime = lastTauntTime + PHX.GetVarNum("phvar_CustomTauntDelay")
 	local curTime = CurTime()
 	return nextCustomTime - curTime
 end
@@ -102,8 +105,10 @@ local function CreateTauntIndicators( material, color, tx, ty, w, h )
 	end
 end
 
-local delayR = PHX.CVAR.NormalTauntDelay:GetInt()
-local delayC = PHX.CVAR.CustomTauntDelay:GetInt()
+--local delayR = PHX.CVAR.NormalTauntDelay:GetInt()
+--local delayC = PHX.CVAR.CustomTauntDelay:GetInt()
+local delayR = PHX.GetVarNum("phvar_NormalTauntDelay")
+local delayC = PHX.GetVarNum("phvar_CustomTauntDelay")
 
 -- /!\ NOTICE: This is prototype, will improved or changed sometime in future.
 local function AutoTauntPaint_phx()
@@ -187,14 +192,16 @@ end
 local function Setup()
 	local ply = LocalPlayer()
 
-	isEnabled = PHX.CVAR.AutoTauntEnable:GetBool()
+	--isEnabled = PHX.CVAR.AutoTauntEnable:GetBool()
+	isEnabled = PHX.GetVarBool("phvar_AutoTauntEnable")
 	isProp = ply:Team() == TEAM_PROPS
 	started = true
 	previousTime = CurTime()
 	tweenTime = 0
 
 	if isEnabled && isProp then
-		delay = PHX.CVAR.AutoTauntDelay:GetInt()
+		--delay = PHX.CVAR.AutoTauntDelay:GetInt()
+		delay = PHX.GetVarNum("phvar_AutoTauntDelay")
 		timer.Create(timerID, 1, 0, CheckAutoTaunt)
 	end
 end
