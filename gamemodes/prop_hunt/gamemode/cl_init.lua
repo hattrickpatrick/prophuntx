@@ -55,6 +55,13 @@ PHX.CLCVAR.TeamTopBar		= CreateClientConVar("ph_show_team_topbar", "1", true, fa
 PHX.CLCVAR.CustomCrosshair	= CreateClientConVar("ph_show_custom_crosshair","1",true,false,"Show custom crosshair for props")
 PHX.CLCVAR.ControlTutorial	= CreateClientConVar("ph_show_tutor_control","1",true,false,"Show 'Prop Gameplay Control' hud on each prop spawns. This only show twice and reset until map changes/user disconnect.")
 
+-- moved here from sh_init.lua
+PHX.CLCVAR.Language              = CreateClientConVar("ph_cl_language", GetGlobalString("phvar_DefaultLang", "en-us"), true, true, "Prefered language to use")
+PHX.CLCVAR.DefaultTauntKey       = CreateClientConVar("ph_default_taunt_key", KEY_F3, true, true, "Default random taunt key to be used. Default is F3 ("..tostring(KEY_F3)..")")
+PHX.CLCVAR.DefaultCustomTauntKey = CreateClientConVar("ph_default_customtaunt_key", KEY_C, true, true, "Default custom taunt key to be used. Default is C ("..tostring(KEY_C)..")")
+PHX.CLCVAR.RotationLockKey       = CreateClientConVar("ph_default_rotation_lock_key", KEY_R, true, true, "Default Rotation lock key to be used. Default is R ("..tostring(KEY_R)..")")
+
+
 -- Called immediately after starting the gamemode 
 function Initialize()
 	cHullz 	= 64
@@ -89,7 +96,8 @@ function GM:CalcView(pl, origin, angles, fov)
  	
  	-- Give the active weapon a go at changing the viewmodel position 
 	if pl:Team() == TEAM_PROPS && pl:Alive() then
-		if PHX.CVAR.CameraCollision:GetBool() then
+		--if PHX.CVAR.CameraCollision:GetBool() then
+		if PHX.GetVarBool("phvar_CameraCollision") then
 			local trace = {}
 
 			local filterent = ents.FindByClass("ph_prop")
@@ -160,7 +168,8 @@ local crosshair = Material("vgui/hud_crosshair")
 -- Draw round timeleft and hunter release timeleft
 function HUDPaint()
 	-- Draw player texts
-	if PHX.CVAR.SeePlayerNames:GetBool() && PHX.CLCVAR.PlayerText:GetBool() && LocalPlayer():Team() != TEAM_SPECTATOR then
+	--if PHX.CVAR.SeePlayerNames:GetBool() && PHX.CLCVAR.PlayerText:GetBool() && LocalPlayer():Team() != TEAM_SPECTATOR then
+	if PHX.GetVarBool("phvar_SeePlayerNames") && PHX.CLCVAR.PlayerText:GetBool() && LocalPlayer():Team() != TEAM_SPECTATOR then
 		for _, pl in pairs(player.GetAll()) do
 			if pl != LocalPlayer() && (pl && pl:IsValid() && pl:Alive() && pl:Team() == LocalPlayer():Team()) then
 				local addvector = Vector(0, 0, math.Clamp(pl:EyePos():Distance(LocalPlayer():EyePos())*0.04, 16, 64))
@@ -172,7 +181,8 @@ function HUDPaint()
 	
 	-- Hunter Blindlock Time
 	if GetGlobalBool("InRound", false) then
-		local blindlock_time_left = (PHX.CVAR.BlindTime:GetInt() - (CurTime() - GetGlobalFloat("RoundStartTime", 0))) + 1
+		--local blindlock_time_left = (PHX.CVAR.BlindTime:GetInt() - (CurTime() - GetGlobalFloat("RoundStartTime", 0))) + 1
+		local blindlock_time_left = (PHX.GetVarNum("phvar_BlindTime") - (CurTime() - GetGlobalFloat("phvar_RoundStartTime", 0))) + 1
 		
 		if blindlock_time_left < 1 && blindlock_time_left > -6 then
 			blindlock_time_left_msg = PHX:FTranslate("HUD_UNBLINDED")
@@ -436,7 +446,8 @@ end)
 -- PHX.FreezeCamSounds is moved to sh_config.lua!
 
 net.Receive("PlayFreezeCamSound", function()
-	if PHX.CVAR.FreezeCamUseSingle:GetBool() then
+	--if PHX.CVAR.FreezeCamUseSingle:GetBool() then
+	if PHX.GetVarBool("phvar_FreezeCamUseSingle") then
 		surface.PlaySound( PHX.LegalSoundPath )
 	else
 		surface.PlaySound( table.Random(PHX.FreezeCamSounds) )
