@@ -62,8 +62,10 @@ function PHX:Translate( textToFind, ... )
 	local lg = self.CVAR.Language:GetString()
 	
 	-- if this was forced by server, we'll use that instead.
-	if PHX.CVAR.UseForceLang:GetBool() then
-		lg = PHX.CVAR.ForcedLanguage:GetString()
+	--if PHX.CVAR.UseForceLang:GetBool() then
+	if PHX.GetVarBool("phvar_UseForceLang") then
+		--lg = PHX.CVAR.ForcedLanguage:GetString()
+		lg = PHX.GetVarString("phvar_ForcedLanguage")
 	end
 	
 	local code = self.LANGUAGES[lg]
@@ -94,8 +96,10 @@ function PHX:FTranslate( textToFind, ... )
 	local lg = self.CVAR.Language:GetString()
 	
 	-- if this was forced by server, we'll use that instead.
-	if PHX.CVAR.UseForceLang:GetBool() then
-		lg = PHX.CVAR.ForcedLanguage:GetString()
+	--if PHX.CVAR.UseForceLang:GetBool() then
+	if PHX.GetVarBool("phvar_UseForceLang") then
+		--lg = PHX.CVAR.ForcedLanguage:GetString()
+		lg = PHX.GetVarString("phvar_ForcedLanguage")
 	end
 	
 	local code = self.LANGUAGES[lg]
@@ -144,8 +148,10 @@ function PHX:GetRandomTranslated( tblKey )
 	local lg = self.CVAR.Language:GetString()
 	
 	-- if this was forced by server, we'll use that instead.
-	if PHX.CVAR.UseForceLang:GetBool() then
-		lg = PHX.CVAR.ForcedLanguage:GetString()
+	--if PHX.CVAR.UseForceLang:GetBool() then
+	if PHX.GetVarBool("phvar_UseForceLang") then
+		--lg = PHX.CVAR.ForcedLanguage:GetString()
+		lg = PHX.GetVarString("phvar_ForcedLanguage")
 	end
 	
 	local code = self.LANGUAGES[lg]
