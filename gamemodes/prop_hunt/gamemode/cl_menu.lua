@@ -11,7 +11,8 @@ end
 
 function PHX.UI.BaseMainMenu(ply, cmd, args)
 	
-	if (PHX.LANGUAGES[PHX.CVAR.Language:GetString()] == nil or table.IsEmpty(PHX.LANGUAGES[PHX.CVAR.Language:GetString()])) then
+	--if (PHX.LANGUAGES[PHX.CVAR.Language:GetString()] == nil or table.IsEmpty(PHX.LANGUAGES[PHX.CVAR.Language:GetString()])) then
+	if (PHX.LANGUAGES[PHX.CLCVAR.Language:GetString()] == nil or table.IsEmpty(PHX.LANGUAGES[PHX.CLCVAR.Language:GetString()])) then
 		PHX:AddChat("Error: Cannot open Prop Hunt X Menu because the language you're using is not available.", Color(255,0,0))
 		PHX:AddChat("Please revert to default language by typing 'ph_cl_language en_us' in the console!", Color(255,255,0))
 		return
@@ -252,7 +253,8 @@ function PHX.UI.BaseMainMenu(ply, cmd, args)
 			pnl:SetColWide( 68 )
 			pnl:SetRowHeight( 68 )
 			
-			local plMode = PHX.CVAR.UseModelType:GetInt()
+			--local plMode = PHX.CVAR.UseModelType:GetInt()
+			local plMode = PHX.GetVarNum("phvar_UseModelType")
 			local plWhich = {
 				[0]	= player_manager.AllValidModels(),
 				[1]	= list.Get("PlayerOptionsModel")
@@ -316,7 +318,8 @@ function PHX.UI.BaseMainMenu(ply, cmd, args)
 		end
 		
 		-- Self Explanationary.
-		if PHX.CVAR.UseCustomModel:GetBool() then
+		--if PHX.CVAR.UseCustomModel:GetBool() then
+		if PHX.GetVarBool("phvar_UseCustomMdlHunter") then
 			-- Call the VGUI Properties of PlayerModelAdditions().
 			PHX.UI:PlayerModelAdditions()
 			local PanelModify = PHX.UI.PnlTab:AddSheet("", panel, "vgui/ph_iconmenu/m_plmodel.png")
@@ -354,8 +357,10 @@ function PHX.UI.BaseMainMenu(ply, cmd, args)
 		local panel,gridpl = PHX.UI:CreateBasicLayout(Color(40,40,40,180),PHX.UI.PnlTab)
 
 		PHX.UI:CreateVGUIType("", "label", false, gridpl, PHX:FTranslate("PHXM_PLAYER_LANG"))
-		if (PHX.CVAR.UseForceLang:GetBool()) then
-			PHX.UI:CreateVGUIType("", "label", false, gridpl, "Server is currently using a forced language. Current Language is: " .. PHX.LANGUAGES[PHX.CVAR.ForcedLanguage:GetString()].NameEnglish)
+		--if (PHX.CVAR.UseForceLang:GetBool()) then
+		if (PHX.GetVarBool("phvar_UseForceLang")) then
+			--PHX.UI:CreateVGUIType("", "label", false, gridpl, "Server is currently using a forced language. Current Language is: " .. PHX.LANGUAGES[PHX.CVAR.ForcedLanguage:GetString()].NameEnglish)
+			PHX.UI:CreateVGUIType("", "label", false, gridpl, "Server is currently using a forced language. Current Language is: " .. PHX.LANGUAGES[PHX.GetVarString("phvar_ForcedLanguage")].NameEnglish)
 		else
 			PHX.UI:CreateVGUIType(nil, "langcombobox", nil, gridpl, nil)
 			PHX.UI:CreateVGUIType("", "btn", {max = 1, textdata = {
@@ -416,40 +421,52 @@ function PHX.UI.BaseMainMenu(ply, cmd, args)
 		local panel,grid = PHX.UI:CreateBasicLayout(Color(40,40,40,180),PHX.UI.PnlTab)
 
 		PHX.UI:CreateVGUIType("", "label", false, grid, PHX:FTranslate("PHXM_ADMIN_LANGOVERRIDE"))
-		PHX.UI:CreateVGUIType("ph_use_lang", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_FORCELANG"))
-		PHX.UI:CreateVGUIType("ph_force_lang", "langcombobox", true, grid, PHX:FTranslate("PHXM_ADMIN_LANGTOUSE"))
-		PHX.UI:CreateVGUIType("ph_default_lang", "langcombobox", true, grid, PHX:FTranslate("PHXM_ADMIN_PLAYERDEFAULTLANG"))
+		PHX.UI:CreateVGUIType("UseForceLang", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_FORCELANG"))
+		PHX.UI:CreateVGUIType("ForcedLanguage", "langcombobox", true, grid, PHX:FTranslate("PHXM_ADMIN_LANGTOUSE"))
+		PHX.UI:CreateVGUIType("DefaultLang", "langcombobox", true, grid, PHX:FTranslate("PHXM_ADMIN_PLAYERDEFAULTLANG"))
 		
 		PHX.UI:CreateVGUIType("", "label", false, grid, PHX:FTranslate("PHXM_ADMIN_OPTIONS"))
-		PHX.UI:CreateVGUIType("ph_notify_player_join_leave", "check", "SERVER", grid, PHX:FTranslate("PHXM_ENABLE_PLAYER_JOIN_LEAVE"))
-		PHX.UI:CreateVGUIType("ph_use_custom_plmodel", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_CUSTOM_MODEL"))
-		PHX.UI:CreateVGUIType("ph_use_custom_plmodel_for_prop", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_CUSTOM_MODEL_PROP"))
-		PHX.UI:CreateVGUIType("ph_customtaunts_delay", "slider", {min = 2, max = 120, init = PHX.CVAR.CustomTauntDelay:GetInt(), dec = 0, kind = "SERVER"}, grid, PHX:FTranslate("PHXM_ADMIN_TAUNT_DELAY_CUSTOM"))
-		PHX.UI:CreateVGUIType("ph_normal_taunt_delay", "slider", {min = 2, max = 120, init = PHX.CVAR.NormalTauntDelay:GetInt(), dec = 0, kind = "SERVER"}, grid, PHX:FTranslate("PHXM_ADMIN_TAUNT_DELAY_RANDOM"))
-		PHX.UI:CreateVGUIType("ph_autotaunt_enabled", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_AUTOTAUNT_ENABLE"))
-		PHX.UI:CreateVGUIType("ph_autotaunt_delay", "slider", {min = 30, max = 180, init = PHX.CVAR.AutoTauntDelay:GetInt(), dec = 0, kind = "SERVER"}, grid, PHX:FTranslate("PHXM_ADMIN_TAUNT_DELAY_AUTO"))
-		PHX.UI:CreateVGUIType("ph_forcejoinbalancedteams", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_FORCEJOINBALANCE"))
-		PHX.UI:CreateVGUIType("ph_enable_teambalance", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_ENABLETEAMBALANCE"))
+		PHX.UI:CreateVGUIType("NotifyPlayerJoinLeaves", "check", "SERVER", grid, PHX:FTranslate("PHXM_ENABLE_PLAYER_JOIN_LEAVE"))
+		PHX.UI:CreateVGUIType("UseCustomMdlHunter", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_CUSTOM_MODEL"))
+		PHX.UI:CreateVGUIType("UseCustomMdlProp", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_CUSTOM_MODEL_PROP"))
+		--PHX.UI:CreateVGUIType("ph_customtaunts_delay", "slider", {min = 2, max = 120, init = PHX.CVAR.CustomTauntDelay:GetInt(), dec = 0, kind = "SERVER"}, grid, PHX:FTranslate("PHXM_ADMIN_TAUNT_DELAY_CUSTOM"))
+		PHX.UI:CreateVGUIType("CustomTauntDelay", "textentry", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_TAUNT_DELAY_CUSTOM"))
+		--PHX.UI:CreateVGUIType("ph_normal_taunt_delay", "slider", {min = 2, max = 120, init = PHX.CVAR.NormalTauntDelay:GetInt(), dec = 0, kind = "SERVER"}, grid, PHX:FTranslate("PHXM_ADMIN_TAUNT_DELAY_RANDOM"))
+		PHX.UI:CreateVGUIType("NormalTauntDelay", "textentry", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_TAUNT_DELAY_RANDOM"))
+		PHX.UI:CreateVGUIType("AutoTauntEnable", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_AUTOTAUNT_ENABLE"))
+		--PHX.UI:CreateVGUIType("ph_autotaunt_delay", "slider", {min = 30, max = 180, init = PHX.CVAR.AutoTauntDelay:GetInt(), dec = 0, kind = "SERVER"}, grid, PHX:FTranslate("PHXM_ADMIN_TAUNT_DELAY_AUTO"))
+		PHX.UI:CreateVGUIType("AutoTauntDelay", "textentry", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_TAUNT_DELAY_AUTO"))
+		PHX.UI:CreateVGUIType("ForceJoinBalancedTeams", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_FORCEJOINBALANCE"))
+		PHX.UI:CreateVGUIType("EnableTeamBalance", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_ENABLETEAMBALANCE"))
 		PHX.UI:CreateVGUIType("devspacer","spacer",nil,grid,"" )
-		PHX.UI:CreateVGUIType("ph_notice_prop_rotation", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_NOTICE_ROTATION"))
-		PHX.UI:CreateVGUIType("ph_prop_camera_collisions", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_CAMERA_COLLIDE"))
-		PHX.UI:CreateVGUIType("ph_freezecam", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_FREEZECAM"))
-		PHX.UI:CreateVGUIType("ph_prop_collision", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_PROP_COLLIDE"))
-		PHX.UI:CreateVGUIType("ph_swap_teams_every_round", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_SWAP_TEAM"))
-		PHX.UI:CreateVGUIType("ph_hunter_fire_penalty", "slider", 	{min = 2, max = 80, init = PHX.CVAR.HunterPenalty:GetInt(), dec = 0, kind = "SERVER"}, grid, PHX:FTranslate("PHXM_ADMIN_HUNTER_PENALTY"))
-		PHX.UI:CreateVGUIType("ph_hunter_kill_bonus", "slider", 	{min = 5, max = 100, init = PHX.CVAR.HunterKillBonus:GetInt(), dec = 0, kind = "SERVER"}, grid, PHX:FTranslate("PHXM_ADMIN_HUNTER_KILL_BONUS"))
-		PHX.UI:CreateVGUIType("ph_smggrenadecounts",  "slider", 	{min = 1, max = 50, init = PHX.CVAR.SMGGrenadeCounts:GetInt(), dec = 0, kind = "SERVER"}, grid, PHX:FTranslate("PHXM_ADMIN_HUNTER_SMG_GRENADES"))
-		PHX.UI:CreateVGUIType("ph_game_time", "slider", 			{min = 20, max = 300, init = PHX.CVAR.GameTime:GetInt(), dec = 0, kind = "SERVER"}, grid, PHX:FTranslate("PHXM_ADMIN_GAME_TIME"))
-		PHX.UI:CreateVGUIType("ph_hunter_blindlock_time", "slider", {min = 15, max = 60, init = PHX.CVAR.BlindTime:GetInt(), dec = 0, kind = "SERVER"}, grid, PHX:FTranslate("PHXM_ADMIN_BLINDLOCK_TIME"))
-		PHX.UI:CreateVGUIType("ph_round_time", "slider", 			{min = 120, max = 600, init = PHX.CVAR.RoundTime:GetInt(), dec = 0, kind = "SERVER"}, grid, PHX:FTranslate("PHXM_ADMIN_ROUND_TIME"))
-		PHX.UI:CreateVGUIType("ph_rounds_per_map", "slider", 		{min = 5, max = 30, init = PHX.CVAR.TotalRounds:GetInt(), dec = 0, kind = "SERVER"}, grid, PHX:FTranslate("PHXM_ADMIN_ROUNDS_PER_MAP"))
-		PHX.UI:CreateVGUIType("ph_enable_lucky_balls", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_ENABLE_LUCKYBALL"))
-		PHX.UI:CreateVGUIType("ph_enable_devil_balls", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_ENABLE_CRYSTAL"))
-		PHX.UI:CreateVGUIType("ph_waitforplayers", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_WAIT_PLAYERS"))
-		PHX.UI:CreateVGUIType("ph_min_waitforplayers", "slider", { min = 1, max = game.MaxPlayers(), init = PHX.CVAR.MinWaitForPlayers:GetInt(), dec = 0, kind = "SERVER" }, grid, PHX:FTranslate("PHXM_ADMIN_WAIT_MIN_PLAYERS"))
+		PHX.UI:CreateVGUIType("PropNotifyRotation", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_NOTICE_ROTATION"))
+		PHX.UI:CreateVGUIType("CameraCollision", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_CAMERA_COLLIDE"))
+		PHX.UI:CreateVGUIType("FreezeCamera", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_FREEZECAM"))
+		PHX.UI:CreateVGUIType("PropCollide", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_PROP_COLLIDE"))
+		PHX.UI:CreateVGUIType("SwapTeam", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_SWAP_TEAM"))
+		--PHX.UI:CreateVGUIType("ph_hunter_fire_penalty", "slider", 	{min = 2, max = 80, init = PHX.CVAR.HunterPenalty:GetInt(), dec = 0, kind = "SERVER"}, grid, PHX:FTranslate("PHXM_ADMIN_HUNTER_PENALTY"))
+		PHX.UI:CreateVGUIType("HunterPenalty", "textentry", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_HUNTER_PENALTY"))
+		--PHX.UI:CreateVGUIType("ph_hunter_kill_bonus", "slider", 	{min = 5, max = 100, init = PHX.CVAR.HunterKillBonus:GetInt(), dec = 0, kind = "SERVER"}, grid, PHX:FTranslate("PHXM_ADMIN_HUNTER_KILL_BONUS"))
+		PHX.UI:CreateVGUIType("HunterKillBonus", "textentry", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_HUNTER_KILL_BONUS"))
+		--PHX.UI:CreateVGUIType("ph_smggrenadecounts",  "slider", 	{min = 1, max = 50, init = PHX.CVAR.SMGGrenadeCounts:GetInt(), dec = 0, kind = "SERVER"}, grid, PHX:FTranslate("PHXM_ADMIN_HUNTER_SMG_GRENADES"))
+		PHX.UI:CreateVGUIType("SMGGrenadeCounts", "textentry", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_HUNTER_SMG_GRENADES"))
+		--PHX.UI:CreateVGUIType("ph_game_time", "slider", 			{min = 20, max = 300, init = PHX.CVAR.GameTime:GetInt(), dec = 0, kind = "SERVER"}, grid, PHX:FTranslate("PHXM_ADMIN_GAME_TIME"))
+		PHX.UI:CreateVGUIType("GameTime", "textentry", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_GAME_TIME"))
+		--PHX.UI:CreateVGUIType("ph_hunter_blindlock_time", "slider", {min = 15, max = 60, init = PHX.CVAR.BlindTime:GetInt(), dec = 0, kind = "SERVER"}, grid, PHX:FTranslate("PHXM_ADMIN_BLINDLOCK_TIME"))
+		PHX.UI:CreateVGUIType("BlindTime", "textentry", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_BLINDLOCK_TIME"))
+		--PHX.UI:CreateVGUIType("ph_round_time", "slider", 			{min = 120, max = 600, init = PHX.CVAR.RoundTime:GetInt(), dec = 0, kind = "SERVER"}, grid, PHX:FTranslate("PHXM_ADMIN_ROUND_TIME"))
+		PHX.UI:CreateVGUIType("RoundTime", "textentry", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_ROUND_TIME"))
+		--PHX.UI:CreateVGUIType("ph_rounds_per_map", "slider", 		{min = 5, max = 30, init = PHX.CVAR.TotalRounds:GetInt(), dec = 0, kind = "SERVER"}, grid, PHX:FTranslate("PHXM_ADMIN_ROUNDS_PER_MAP"))
+		PHX.UI:CreateVGUIType("TotalRounds", "textentry", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_ROUNDS_PER_MAP"))
+		PHX.UI:CreateVGUIType("UseLuckyBall", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_ENABLE_LUCKYBALL"))
+		PHX.UI:CreateVGUIType("UseDevilBall", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_ENABLE_CRYSTAL"))
+		PHX.UI:CreateVGUIType("WaitForPlayers", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_WAIT_PLAYERS"))
+		--PHX.UI:CreateVGUIType("ph_min_waitforplayers", "slider", { min = 1, max = game.MaxPlayers(), init = PHX.CVAR.MinWaitForPlayers:GetInt(), dec = 0, kind = "SERVER" }, grid, PHX:FTranslate("PHXM_ADMIN_WAIT_MIN_PLAYERS"))
+		PHX.UI:CreateVGUIType("MinWaitForPlayers", "textentry", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_WAIT_MIN_PLAYERS"))
 		PHX.UI:CreateVGUIType("", "label", false, grid, PHX:FTranslate("PHXM_ADMIN_TAUNTMODES"))
 		PHX.UI:CreateVGUIType("", "btn", {max = 2, textdata = {
-			[1] = {PHX:FTranslate( "PHXM_ADMIN_TAUNTMODE_MODE", PHX.CVAR.CustomTauntMode:GetInt() ), 
+			--[1] = {PHX:FTranslate( "PHXM_ADMIN_TAUNTMODE_MODE", PHX.CVAR.CustomTauntMode:GetInt() ), 
+			[1] = {PHX:FTranslate( "PHXM_ADMIN_TAUNTMODE_MODE", PHX.GetVarNum("phvar_CustomTauntMode") ), 
 			function(self)
 				local CusTauntConvar = {
 					[0] = PHX:FTranslate("PHXM_ADMIN_TAUNTMODE0"),
@@ -462,17 +479,21 @@ function PHX.UI.BaseMainMenu(ply, cmd, args)
 					net.SendToServer()
 				end
 				
-				self:SetText(CusTauntConvar[PHX.CVAR.CustomTauntMode:GetInt()])
+				--self:SetText(CusTauntConvar[PHX.CVAR.CustomTauntMode:GetInt()])
+				self:SetText(CusTauntConvar[PHX.GetVarNum("phvar_CustomTauntMode")])
 				local state = 0
-				if PHX.CVAR.CustomTauntMode:GetInt() == 0 then
+				--if PHX.CVAR.CustomTauntMode:GetInt() == 0 then
+				if PHX.GetVarNum("phvar_CustomTauntMode") == 0 then
 					state = 1
 					SendTauntCommandState(1)
 					self:SetText(CusTauntConvar[state])
-				elseif PHX.CVAR.CustomTauntMode:GetInt() == 1 then
+				--elseif PHX.CVAR.CustomTauntMode:GetInt() == 1 then
+				elseif PHX.GetVarNum("phvar_CustomTauntMode") == 1 then
 					state = 2
 					SendTauntCommandState(2)
 					self:SetText(CusTauntConvar[state])
-				elseif PHX.CVAR.CustomTauntMode:GetInt() == 2 then
+				--elseif PHX.CVAR.CustomTauntMode:GetInt() == 2 then
+				elseif PHX.GetVarNum("phvar_CustomTauntMode") == 2 then
 					state = 0
 					SendTauntCommandState(0)
 					self:SetText(CusTauntConvar[state])
@@ -496,37 +517,43 @@ function PHX.UI.BaseMainMenu(ply, cmd, args)
 		}, grid ,"")
 		PHX.UI:CreateVGUIType("devspacer","spacer",nil,grid,"" )
 		PHX.UI:CreateVGUIType("", "label", false, grid, PHX:FTranslate("PHXM_ADMIN_DEVSECTION"))
-		PHX.UI:CreateVGUIType("ph_check_props_boundaries", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_ROOMCHECK"))
-		PHX.UI:CreateVGUIType("ph_mkbren_use_new_mdl","check","SERVER",grid, PHX:FTranslate("PHXM_ADMIN_USENEWMKBREN"))
-		PHX.UI:CreateVGUIType("ph_print_verbose", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_BEVERBOSE"))
-		PHX.UI:CreateVGUIType("ph_enable_plnames", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_SHOWPLNAMEHEAD"))
-		PHX.UI:CreateVGUIType("ph_fc_use_single_sound", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_USESINGLE_FZCAM"))
-		PHX.UI:CreateVGUIType("ph_fc_cue_path","textentry","SERVER", grid, PHX:FTranslate("TEXTENTRY_FZ_SINGLE"))
-		PHX.UI:CreateVGUIType("ph_use_playermodeltype", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_MODELLISTINGTYPE"))
-		PHX.UI:CreateVGUIType("ph_prop_jumppower", "slider", {min = 1, max = 3, init = PHX.CVAR.PropJumpPower:GetFloat(), dec = 2, float = true, kind = "SERVER"}, grid, PHX:FTranslate("PHXM_ADMIN_JUMPPOWER"))
-		PHX.UI:CreateVGUIType("ph_sv_enable_obb_modifier","check","SERVER",grid, PHX:FTranslate("PHXM_ADMIN_ENABLE_OBB"))
-		PHX.UI:CreateVGUIType("ph_reload_obb_setting_everyround","check","SERVER",grid, PHX:FTranslate("PHXM_ADMIN_RELOAD_OBB"))
+		PHX.UI:CreateVGUIType("CheckSpace", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_ROOMCHECK"))
+		PHX.UI:CreateVGUIType("UseNewMKBren","check","SERVER",grid, PHX:FTranslate("PHXM_ADMIN_USENEWMKBREN"))
+		PHX.UI:CreateVGUIType("BeVerbose", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_BEVERBOSE"))
+		PHX.UI:CreateVGUIType("SeePlayerNames", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_SHOWPLNAMEHEAD"))
+		PHX.UI:CreateVGUIType("FreezeCamUseSingle", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_USESINGLE_FZCAM"))
+		PHX.UI:CreateVGUIType("FreezeCamCue","textentry","SERVER", grid, PHX:FTranslate("TEXTENTRY_FZ_SINGLE"))
+		PHX.UI:CreateVGUIType("UseModelType", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_MODELLISTINGTYPE"))
+		--PHX.UI:CreateVGUIType("ph_prop_jumppower", "slider", {min = 1, max = 3, init = PHX.CVAR.PropJumpPower:GetFloat(), dec = 2, float = true, kind = "SERVER"}, grid, PHX:FTranslate("PHXM_ADMIN_JUMPPOWER"))
+		PHX.UI:CreateVGUIType("PropJumpPower", "textentry", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_JUMPPOWER"))
+		PHX.UI:CreateVGUIType("EnableOBBMod","check","SERVER",grid, PHX:FTranslate("PHXM_ADMIN_ENABLE_OBB"))
+		PHX.UI:CreateVGUIType("ApplyOBBonRound","check","SERVER",grid, PHX:FTranslate("PHXM_ADMIN_RELOAD_OBB"))
 		
 		-- new cvar PH:X additions
 		PHX.UI:CreateVGUIType("","spacer",nil,grid,"" )
 		PHX.UI:CreateVGUIType("", "label", false, grid, PHX:FTranslate("PHXM_ADMIN_EXPERIMENTALPHX"))
 
-		PHX.UI:CreateVGUIType("ph_add_hla_combine", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_HLA_COMBINE"))
-		PHX.UI:CreateVGUIType("ph_enable_teambalance", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_TEAMBALANCE"))
-		PHX.UI:CreateVGUIType("ph_max_teamchange_limit", "slider", {min = 3, max = 50, init = PHX.CVAR.ChangeTeamLimit:GetInt(), dec = 0, kind = "SERVER"}, grid, PHX:FTranslate("PHXM_ADMIN_CHANGETEAM_LIMIT"))
-		PHX.UI:CreateVGUIType("ph_use_new_chat", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_USENEWCHAT"))
-		PHX.UI:CreateVGUIType("ph_new_chat_pos_sub", "slider", {min = 45, max = 1500, init = PHX.CVAR.NewChatPosSubstract:GetInt(), dec = 0, kind = "SERVER"}, grid, PHX:FTranslate("PHXM_ADMIN_NEWCHATPOS"))
+		PHX.UI:CreateVGUIType("HLACombine", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_HLA_COMBINE"))
+		PHX.UI:CreateVGUIType("EnableTeamBalance", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_TEAMBALANCE"))
+		--PHX.UI:CreateVGUIType("ph_max_teamchange_limit", "slider", {min = 3, max = 50, init = PHX.CVAR.ChangeTeamLimit:GetInt(), dec = 0, kind = "SERVER"}, grid, PHX:FTranslate("PHXM_ADMIN_CHANGETEAM_LIMIT"))
+		PHX.UI:CreateVGUIType("ChangeTeamLimit", "textentry", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_CHANGETEAM_LIMIT"))
+		PHX.UI:CreateVGUIType("EnableNewChat", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_USENEWCHAT"))
+		--PHX.UI:CreateVGUIType("ph_new_chat_pos_sub", "slider", {min = 45, max = 1500, init = PHX.CVAR.NewChatPosSubstract:GetInt(), dec = 0, kind = "SERVER"}, grid, PHX:FTranslate("PHXM_ADMIN_NEWCHATPOS"))
+		PHX.UI:CreateVGUIType("NewChatPosSubtract", "textentry", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_NEWCHATPOS"))
 
-		PHX.UI:CreateVGUIType("ph_allow_respawnonblind", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_RESPAWNONBLIND"))
-		PHX.UI:CreateVGUIType("ph_allow_respawnonblind_team_only", "slider", {min = 0, max = 2, init = PHX.CVAR.AllowRespawnOnBlindTeam:GetInt(), dec = 0, kind = "SERVER"}, grid, PHX:FTranslate("PHXM_ADMIN_RESPAWNONBLIND_TEAM"))
-		PHX.UI:CreateVGUIType("ph_allow_respawn_from_spectator", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_ALLOWRESPAWN_SPECTATOR"))
-		PHX.UI:CreateVGUIType("ph_blindtime_respawn_percent", "slider", {min = 0, max = 1, init = PHX.CVAR.BlindRespawnTimePercent:GetFloat(), dec = 2, float = true, kind = "SERVER"}, grid, PHX:FTranslate("PHXM_ADMIN_REWSPANTIMEPERCENT"))
-		PHX.UI:CreateVGUIType("ph_allow_respawnonblind_teamchange", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_ALLOWRESPAWN_TEAMCHANGE"))
+		PHX.UI:CreateVGUIType("AllowRespawnOnBlind", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_RESPAWNONBLIND"))
+		--PHX.UI:CreateVGUIType("ph_allow_respawnonblind_team_only", "slider", {min = 0, max = 2, init = PHX.CVAR.AllowRespawnOnBlindTeam:GetInt(), dec = 0, kind = "SERVER"}, grid, PHX:FTranslate("PHXM_ADMIN_RESPAWNONBLIND_TEAM"))
+		PHX.UI:CreateVGUIType("AllowRespawnOnBlindTeam", "textentry", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_RESPAWNONBLIND_TEAM"))
+		PHX.UI:CreateVGUIType("AllowSpectatorRespawnOnBlind", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_ALLOWRESPAWN_SPECTATOR"))
+		--PHX.UI:CreateVGUIType("ph_blindtime_respawn_percent", "slider", {min = 0, max = 1, init = PHX.CVAR.BlindRespawnTimePercent:GetFloat(), dec = 2, float = true, kind = "SERVER"}, grid, PHX:FTranslate("PHXM_ADMIN_REWSPANTIMEPERCENT"))
+		PHX.UI:CreateVGUIType("BlindRespawnTimePercent", "textentry", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_REWSPANTIMEPERCENT"))
+		PHX.UI:CreateVGUIType("AllowRespawnOnBlindBetweenTeams", "check", "SERVER", grid, PHX:FTranslate("PHXM_ADMIN_ALLOWRESPAWN_TEAMCHANGE"))
 		
 		PHX.UI:CreateVGUIType("", "label", false, grid, PHX:FTranslate("PHXM_ADMIN_PICKUP_PROPS"))
 		-- ph_allow_pickup_object
 		PHX.UI:CreateVGUIType("", "btn", {max = 1, textdata = {
-			[1] = {PHX:FTranslate( "PHXM_MODE_DEFAULT", PHX.CVAR.AllowPickupProp:GetInt() ), 
+			--[1] = {PHX:FTranslate( "PHXM_MODE_DEFAULT", PHX.CVAR.AllowPickupProp:GetInt() ), 
+			[1] = {PHX:FTranslate( "PHXM_MODE_DEFAULT", PHX.GetVarNum("phvar_AllowPickupProp") ), 
 			function(self)
 				local modes = {
 					[0] = PHX:FTranslate("PHXM_MODE0"),
@@ -545,15 +572,20 @@ function PHX.UI.BaseMainMenu(ply, cmd, args)
 					panel:SetText(modes[state])
 				end
 				
-				self:SetText(modes[PHX.CVAR.AllowPickupProp:GetInt()])
+				--self:SetText(modes[PHX.CVAR.AllowPickupProp:GetInt()])
+				self:SetText(modes[PHX.GetVarNum("phvar_AllowPickupProp")])
 				local state = 0
-				if PHX.CVAR.AllowPickupProp:GetInt() == 0 then
+				--if PHX.CVAR.AllowPickupProp:GetInt() == 0 then
+				if PHX.GetVarNum("phvar_AllowPickupProp") == 0 then
 					state = 1
-				elseif PHX.CVAR.AllowPickupProp:GetInt() == 1 then
+				--elseif PHX.CVAR.AllowPickupProp:GetInt() == 1 then
+				elseif PHX.GetVarNum("phvar_AllowPickupProp") == 1 then
 					state = 2
-				elseif PHX.CVAR.AllowPickupProp:GetInt() == 2 then
+				--elseif PHX.CVAR.AllowPickupProp:GetInt() == 2 then
+				elseif PHX.GetVarNum("phvar_AllowPickupProp") == 2 then
 					state = 3
-				elseif PHX.CVAR.AllowPickupProp:GetInt() == 3 then
+				--elseif PHX.CVAR.AllowPickupProp:GetInt() == 3 then
+				elseif PHX.GetVarNum("phvar_AllowPickupProp") == 3 then
 					state = 0
 				end
 				apply(self,state)
