@@ -45,7 +45,7 @@ function CLASS:OnSpawn(pl)
 	pl:SetViewOffset(Vector(0,0,64))
 	pl:SetViewOffsetDucked(Vector(0,0,28))
 
-	--local unlock_time = math.Clamp(PHX.CVAR.BlindTime:GetInt() - (CurTime() - GetGlobalFloat("RoundStartTime", 0)), 0, PHX.CVAR.BlindTime:GetInt())
+	--local unlock_time = math.Clamp(PHX.GetVarNum("phvar_BlindTime") - (CurTime() - GetGlobalFloat("RoundStartTime", 0)), 0, PHX.GetVarNum("phvar_BlindTime"))
 	
 	local unlock_time = GetGlobalInt("unBlind_Time", 0)
 	
@@ -79,7 +79,8 @@ end
 
 -- Hands
 function CLASS:GetHandsModel()
-	if !PHX.CVAR.UseCustomModel:GetBool() then
+	--if !PHX.CVAR.UseCustomModel:GetBool() then
+	if !PHX.GetVarBool("phvar_UseCustomModel") then
 		return { model = "models/weapons/c_arms_combine.mdl", skin = 1, body = "0100000" }
 	end
 end
@@ -96,7 +97,8 @@ function CLASS:OnDeath(pl, attacker, dmginfo)
 	
 	-- Spawn Devil Ball
 	local pos = pl:GetPos()
-	if PHX.CVAR.UseDevilCrystal:GetBool() then
+	--if PHX.CVAR.UseDevilCrystal:GetBool() then
+	if PHX.GetVarBool("UseDevilCrystal") then
 		if math.random() < 0.7 then --70% chance.
 			local dropent = ents.Create("ph_devilball")
 			dropent:SetPos(Vector(pos.x, pos.y, pos.z + 16)) -- to make sure the Devil Ball didn't spawn underground.
