@@ -3,7 +3,7 @@
 local isEnabled = false
 local isProp = false
 --local delay = PHX.CVAR.AutoTauntDelay:GetInt() or 6
-local delay = tonumber(GetGlobalString("AutoTauntDelay")) or 6
+local delay = tonumber(GetGlobalString("phvar_AutoTauntDelay")) or 6
 local started = false
 local timerID = "ph_autotaunt_timer"
 local teamCheckTimer = "ph_autotaunt_teamchecktimer"
